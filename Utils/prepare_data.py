@@ -6,6 +6,7 @@ import re
 import string
 import unicodedata
 from sklearn.model_selection import train_test_split
+import numpy as np
 
 
 def iterate_files(folder_name):
@@ -70,11 +71,17 @@ def prepare_data(list_data: list):
 
 
 def json_save(data, path):
+    '''
+    Save data to file json
+    '''
     with codecs.open(path, 'w', 'utf=8') as fout:
         json.dump(data, fout, ensure_ascii=False)
 
 
 def json_load(path):
+    '''
+    Fast load json file
+    '''
     with codecs.open(path, "r", encoding="utf8") as read_file:
         data = json.load(read_file)
     return data
@@ -93,13 +100,20 @@ def split_ig_ratio(data: list, valid_ratio: float, test_ratio: float):
 
 
 def split_ratio(X, y, valid_ratio: float, test_ratio: float):
+    '''
+    Split data by by ratio while keep label ratio
+    '''
     X_train, X_rem, y_train, y_rem = train_test_split(
         X, y, test_size=valid_ratio+test_ratio, random_state=42, stratify=y)
     X_valid, X_test, y_valid, y_test = train_test_split(
         X_rem, y_rem, test_size=test_ratio/(valid_ratio+test_ratio), random_state=42, stratify=y_rem)
     return X_train, X_valid, X_test, y_train, y_valid, y_test
 
+
 def convert_json(x, y):
+    '''
+    Convert 2 list same length to list of dictionaries
+    '''
     out = []
     for i, o in zip(x, y):
         a = {}
@@ -107,24 +121,69 @@ def convert_json(x, y):
         a['label'] = o
         out.append(a)
     return out
+
+
+def load_data(list_data: list):
+    '''
+    Convert list of dictionaries to lists individually
+    '''
+    content, label = [], []
+    for ele in list_data:
+        content.append(ele.get('content'))
+        label.append(ele.get('label'))
+    return content, label
+
+
+def _save_npy(data, path):
+    '''
+    Save array to npy format file
+    '''
+    with open(path, 'wb') as f:
+        np.save(f, data)
+
+
+def _load_npy(path):
+    '''
+    Fast load npy format file
+    '''
+    with open(path, 'rb') as f:
+        data = np.load(path)
+    return data
+
+def dup_dict(list_dict:list):
+    '''
+    remove duplicate in dict of list
+    '''
+    dup = []
+    new_list = [a['content']+'@__'+a['label'] for a in list_dict]
+    c = {}
+    for i in range(len(new_list)):
+        if new_list[i] in c:
+            dup.append(i)
+        else: 
+            c[new_list[i]] = 0
+    list_dict = np.array(list_dict)
+    return list(np.delete(list_dict, dup))
+
 if __name__ == "__main__":
-    # FOLDER_PATH = 'data/data'
-    # data = iterate_files(FOLDER_PATH)
-    # '''
-    # Save file as json format and ignore the label ratio
-    # '''
-    # data = extract_info(data)
-    # json_save(data, 'data/data.json')
-    # train, valid, test = split_ig_ratio(data, 0.2, 0.1)
+    FOLDER_PATH = 'data/data'
+    data = iterate_files(FOLDER_PATH)
+
+    data = extract_info(data)
+    json_save(data, 'data/data.json')
+
+    ## Save file as json format and ignore the label ratio
+    # train, valid, test = split_ig_ratio(data, 0.2, 0.1)  
 
     '''
     Save file as json format and stratify the label ratio
     '''
-    data = json_load(r'data\data.json')
+    # data = json_load(r'data/data.json')
     X, y = prepare_data(data)
-    X_train, X_valid, X_test, y_train, y_valid, y_test = split_ratio(X, y, valid_ratio=0.2, test_ratio=0.1)
-    train, valid, test = convert_json(X_train, y_train), convert_json(X_valid, y_valid), convert_json(X_test, y_test)
+    X_train, X_valid, X_test, y_train, y_valid, y_test = split_ratio(
+        X, y, valid_ratio=0.2, test_ratio=0.1)
+    train, valid, test = convert_json(X_train, y_train), convert_json(
+        X_valid, y_valid), convert_json(X_test, y_test)
     json_save(train, 'data/train.json')
     json_save(valid, 'data/valid.json')
     json_save(test, 'data/test.json')
-

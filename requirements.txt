@@ -1,0 +1,4 @@
+keras
+scikit-learn
+tqdm
+vncorenlp
