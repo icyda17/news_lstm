@@ -1,15 +1,15 @@
 import numpy as np
-from Utils.prepare_data import load_data
+from prepare_data import load_data, json_load, dup_dict, load_data, convert_json, json_save
 import codecs
 import json
 import re
 import string
 import pickle
 from tqdm import tqdm
-from prepare_data import json_load, dup_dict, load_data, convert_json, json_save
+
 from vncorenlp import VnCoreNLP
 
-annotator = VnCoreNLP("/content/vncorenlp/VnCoreNLP-1.1.1.jar",
+annotator = VnCoreNLP("cache/vncorenlp/VnCoreNLP-1.1.1.jar",
                       annotators="wseg,pos", max_heap_size='-Xmx2g')
 
 EMAIL_PATTERN = re.compile(r'\w+@[^\.].*\.[a-z]{2,}\b')

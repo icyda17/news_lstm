@@ -1,2 +1,4 @@
 .vscode/
 data/*
+cache/*
+model/*
