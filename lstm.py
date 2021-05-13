@@ -1,6 +1,6 @@
 import argparse
 from Utils.utils import *
-from Utils.prepare_data import X_test, _save_npy, _load_npy
+from Utils.prepare_data import _save_npy, _load_npy
 from datetime import datetime
 from keras.callbacks import EarlyStopping
 from network import building_mdl
