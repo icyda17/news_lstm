@@ -2,3 +2,4 @@
 data/*
 cache/*
 model/*
+Utils/__pycache__

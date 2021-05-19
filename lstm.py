@@ -52,16 +52,24 @@ X_train, y_train, X_valid, y_valid, X_test, y_test = \
 # Save for fast load
 
 _save_npy(X_train, 'data/data2id/X_train.npy')
-_save_npy(X_dev, 'data/data2id/X_valid.npy')
+_save_npy(X_valid, 'data/data2id/X_valid.npy')
 _save_npy(X_test, 'data/data2id/X_test.npy')
 _save_npy(y_train, 'data/data2id/y_train.npy')
-_save_npy(y_dev, 'data/data2id/y_valid.npy')
+_save_npy(y_valid, 'data/data2id/y_valid.npy')
 _save_npy(y_test, 'data/data2id/y_test.npy')
-
 '''
+# # Fast load
+
+# X_train= _load_npy('data/data2id/dummy/X_train.npy')
+# X_valid= _load_npy('data/data2id/dummy/X_valid.npy')
+# X_test = _load_npy('data/data2id/dummy/X_test.npy')
+# y_train = _load_npy('data/data2id/dummy/y_train.npy')
+# y_valid = _load_npy('data/data2id/dummy/y_valid.npy')
+# y_test = _load_npy('data/data2id/dummy/y_test.npy')
+
 print('Building model...')
 cls_model = building_mdl(
-    num_lstm_layer, num_hidden_node, dropout, output_length)
+    num_lstm_layer, num_hidden_node, dropout, output_length, max_length, X_train.shape[2])
 
 print('Model summary...')
 print(cls_model.summary())
